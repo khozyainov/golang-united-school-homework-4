@@ -37,30 +37,36 @@ func StringSum(input string) (output string, err error) {
 
 func parseInts(input string) (ints []int, err error) {
 	input = strings.TrimSpace(input)
+
 	if len(input) == 0 {
 		return nil, fmt.Errorf("no ints: %w", errorEmptyInput)
 	}
+
 	input = strings.ReplaceAll(input, " ", "")
+
+	var from, to int
 	i := 0
-	for j := 0; j < len(input); j++ {
-		if c := input[j]; c == ' ' || (j > 0 && c == '-') {
-			parsedInt, err := parseInt(input[i:j])
-			if err != nil {
-				return nil, err
+	n := len(input)
+	for j := 0; j < n; j++ {
+		if c := input[j]; c == ' ' || c == '+' || (j > 0 && c == '-') || j == n-1 {
+			if j < n-1 {
+				from, to = i, j
+				i = j
+			} else {
+				from, to = i, j+1
 			}
-			ints = append(ints, parsedInt)
-			i = j
-		} else if j == len(input)-1 {
-			parsedInt, err := parseInt(input[i : j+1])
+			parsedInt, err := parseInt(input[from:to])
 			if err != nil {
 				return nil, err
 			}
 			ints = append(ints, parsedInt)
 		}
 	}
+
 	if len(ints) != 2 {
 		return nil, fmt.Errorf("parseInts: %w", errorNotTwoOperands)
 	}
+
 	return ints, nil
 }
 
